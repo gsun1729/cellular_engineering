@@ -65,6 +65,7 @@ function myFlag = CellEng_HW1_2018Template()
 	WT_fit = WT_beta(1) * p ./ (p + WT_beta(2)); % this will be a function of WT_beta(1) WT_beta(2), and p
 	semilogx(L0, WT_fit); % what you are plotting
 	legend('Raw WT data', 'WT Fit');
+	saveas(gcf,'wt_raw_fit.png')
 
 	%Plots Residuals
 	figure;
@@ -73,10 +74,8 @@ function myFlag = CellEng_HW1_2018Template()
 	ylabel('Residuals', 'FontSize', 16);
 	title('WT Residuals', 'FontSize', 18);
 	axis([  ]);
+	saveas(gcf,'wt_residuals.png')
 
-
-
-	axis([  ]);
 	%Repeat with Mutant Data Below.  [L] (nM) vs Mutant Signal
 	[MUT_beta, MUT_res] = nlinfit(L0, MUT, @binding, beta0);    
 	% MUT_beta = [proportionality constant, Kd] , ** This needs to be filled in to run **
@@ -87,13 +86,13 @@ function myFlag = CellEng_HW1_2018Template()
 	ylabel('Mutant Signal', 'FontSize', 16);
 	title('Mutant Protein Signal vs. Ligand Concentration', 'FontSize', 18);
 	axis([ ]);
-
 	%Plots fit of mutant data
 	hold on;
 	p =  L0; % this is your array of ligand points to use for fitting
 	MUT_fit = MUT_beta(1) * p ./ (p + MUT_beta(2)); % this will be a function of MUT_beta(1) MUT_beta(2), and p
 	semilogx(L0, MUT_fit); % what you are plotting
 	legend('Raw MUT data', 'MUT Fit');
+	saveas(gcf,'mut_raw_fit.png')
 
 	%Plots Residuals
 	figure;
@@ -102,19 +101,20 @@ function myFlag = CellEng_HW1_2018Template()
 	ylabel('Residuals', 'FontSize', 16);
 	title('Mutant Residuals', 'FontSize', 18);
 	axis([  ]);
+	saveas(gcf,'mut_residuals.png')
 
 
 	figure;
 	semilogx(L0, WT);
 	hold on;
 	semilogx(L0, WT_fit);
-
 	semilogx(L0, MUT);
 	semilogx(L0, MUT_fit);
 	xlabel('Ligand Concentration (nM)', 'FontSize', 16);
 	ylabel('Protein Signal', 'FontSize', 16);
 	title('Superimposed Mutant or WT protein signal vs Ligand')
 	legend('WT Raw', 'WT fit', 'MUT Raw', 'MUT fit')
+	saveas(gcf,'Superimposed.png')
 end
 
 %------------------Function that describes the curve that data points are fit to--------------
