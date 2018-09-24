@@ -42,15 +42,15 @@ function n = HW2_Template()
 	%   A different stimulus range can be used for each enzyme (see paper)
 
 	% # of s.s. evaluations
-	pts = 50;         
+	pts = 100;         
 	% A different stimulus range will be used for each enzyme
 	stim = zeros(pts, 3);
 	% MAPKhas a narrow range due to ultrasensitivity
-	stim(:,1) = logspace(-7, -4, pts)';
+	MAPK = logspace(-7, -4, pts)';
 	% MAPKK has a medium range
-	stim(:,2) = logspace(-7, -4, pts)';
+	MAPKK = logspace(-7, -4, pts)';
 	% MAPKKK has a broad stimulus range
-	stim(:,3) = logspace(-7, -1, pts)';
+	MAPKKK = logspace(-7, -1, pts)';
 	% values of key parameters at s.s.
 	v = zeros(pts,3);
 
@@ -64,28 +64,25 @@ function n = HW2_Template()
 	  
 		% One example for MAPK:
 		% disp(' ');  disp('Calculating MAPK'); 
-	for p = 1:pts
-		y0(2)   = stim(p, 1);
+	for index = 1:pts
+		% MAPK-P Index 5
+		y0(2)   = MAPK(index);
 		[t, y]  = ode23s(@f, tspan, y0);
-		col     = length(y(:,1));
-		v(p,1)  = y(col,5);              % 5	    MAPK-PP  .
-
-		y0(2)   = stim(p, 1);
+		col     = length(y(:, 1));
+		v(p,1)  = y(col, 5);
+		% MAPKK-PP INdex 8 
+		y0(2)   = MAPKK(index);
 		[t, y]  = ode23s(@f, tspan, y0);
-		col     = length(y(:,1));
-		v(p,1)  = y(col,5);              % 5	    MAPK-PP  
-
-		y0(2)   = stim(p, 1);
+		col     = length(y(:, 1));
+		v(p,1)  = y(col, 8);
+		% MAPKKK* index 10
+		y0(2)   = MAPKKK(index);
 		[t, y]  = ode23s(@f, tspan, y0);
-		col     = length(y(:,1));
-		v(p,1)  = y(col,5);              % 5	    MAPK-PP  
+		col     = length(y(:, 1));
+		v(p,1)  = y(col, 10);
 	 end 
 		
 		% Similarly think of MAPKK and MAPKKK
-		
-		
-		
-		
 		
 		
 		
