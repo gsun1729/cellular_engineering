@@ -7,7 +7,7 @@
 function n = HW2_Template()
 	clear all;  close all; clc;
 	% Using default run time from 0 to 100
-	tspan=[0, 100];
+	tspan = [0, 100];
 	% Initial conditions of 14 unbuffered molecules + 10 enzyme-substrate complexes
 	y0 = [0.0003; 0.1; 1.2; 0; 0; 1.2; 0; 0; 0.003; 0; 0.0003; 0.0003; 0.12; 0.12; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0];
 
@@ -42,55 +42,50 @@ function n = HW2_Template()
 	%   A different stimulus range can be used for each enzyme (see paper)
 
 	% # of s.s. evaluations
-	pts = 100;         
+	pts = 100;
 	% A different stimulus range will be used for each enzyme
 	stim = zeros(pts, 3);
 	% MAPKhas a narrow range due to ultrasensitivity
-	MAPK = logspace(-7, -4, pts)';
+	MAPK = logspace(-7, 3, pts)';
 	% MAPKK has a medium range
-	MAPKK = logspace(-7, -4, pts)';
+	MAPKK = logspace(-7, 0, pts)';
 	% MAPKKK has a broad stimulus range
-	MAPKKK = logspace(-7, -1, pts)';
-	% values of key parameters at s.s.
-	v = zeros(pts,3);
+	MAPKKK = logspace(-7, -2, pts)';
+
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%   Get your s.s. enzyme concentrations from the ODE solver here
 	%   Likely want a loop / a few loops for solving over stimulus range
 	%   Stimulus is changed by changing the corresponding initial condition
 
-		[t, y]  = ode23s(@f, tspan, y0);    % Main solver to call
+	% values of key parameters at s.s.
+	v = zeros(pts, 3);
 
-	  
-		% One example for MAPK:
-		% disp(' ');  disp('Calculating MAPK'); 
 	for index = 1:pts
 		% MAPK-P Index 5
 		y0(2)   = MAPK(index);
 		[t, y]  = ode23s(@f, tspan, y0);
 		col     = length(y(:, 1));
-		v(p,1)  = y(col, 5);
-		% MAPKK-PP INdex 8 
+		v(p, 1) = y(col, 5);
+		% MAPKK-PP INdex 8
 		y0(2)   = MAPKK(index);
 		[t, y]  = ode23s(@f, tspan, y0);
 		col     = length(y(:, 1));
-		v(p,1)  = y(col, 8);
+		v(p, 2) = y(col, 8);
 		% MAPKKK* index 10
 		y0(2)   = MAPKKK(index);
 		[t, y]  = ode23s(@f, tspan, y0);
 		col     = length(y(:, 1));
-		v(p,1)  = y(col, 10);
-	 end 
-		
-		% Similarly think of MAPKK and MAPKKK
-		
-		
-		
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
-		
+		v(p, 3) = y(col, 10);
+	 end
 
+ 	%   Recommendation:  Normalize enzyme concentrations by max concentrations
+	normalized_dat = zeros(pts, 3)
+	for n_index = 1:length(normalized_dat)
+		normalized_dat(:, n_index) = v(:, n_index) ./ v(pts, n_index)
+	end
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-	%   Recommendation:  Normalize enzyme concentrations by max concentrations
 
 
 
@@ -103,7 +98,7 @@ function n = HW2_Template()
 	% Use interpolation to find EC50 points
 
 
-	% Hill Coefficient Calculation 
+	% Hill Coefficient Calculation
 	% n =                    % The equation is found in the lecture notes
 
 
@@ -184,7 +179,7 @@ return;
 
 
 %------------------Function that describes the curve that data points are fit to (Optional) --------------
-function yhat = Hill_equation(beta, E_free)  
+function yhat = Hill_equation(beta, E_free)
 	n = beta(1)
 	K_d = beta(2);
 	yhat = ((E_free).^n) ./ (K_d.^n + (E_free).^n);
