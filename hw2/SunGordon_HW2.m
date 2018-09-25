@@ -4,10 +4,10 @@
 
  % Sections of this code come from Upinder S. Bhalla and NCBS
 
-function n = HW2_Template()
+function n = SunGordon_HW2()
 	clear all;  close all; clc;
 	% Using default run time from 0 to 100
-	tspan = [0, 100];
+	tspan = [0, 30];
 	% Initial conditions of 14 unbuffered molecules + 10 enzyme-substrate complexes
 	y0 = [0.0003; 0.1; 1.2; 0; 0; 1.2; 0; 0; 0.003; 0; 0.0003; 0.0003; 0.12; 0.12; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0];
 
@@ -46,11 +46,11 @@ function n = HW2_Template()
 	% A different stimulus range will be used for each enzyme
 	stim = zeros(pts, 3);
 	% MAPKhas a narrow range due to ultrasensitivity
-	MAPK = logspace(-7, 3, pts)';
+	MAPK = logspace(-0.6198, 0.7782, pts)';
 	% MAPKK has a medium range
-	MAPKK = logspace(-7, 0, pts)';
+	MAPKK = logspace(-0.6198, 0.7782, pts)';
 	% MAPKKK has a broad stimulus range
-	MAPKKK = logspace(-7, -2, pts)';
+	MAPKKK = logspace(-0.22, 1.1761, pts)';
 
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -66,25 +66,26 @@ function n = HW2_Template()
 		y0(2)   = MAPK(index);
 		[t, y]  = ode23s(@f, tspan, y0);
 		col     = length(y(:, 1));
-		v(p, 1) = y(col, 5);
+		v(index, 1) = y(col, 5);
 		% MAPKK-PP INdex 8
 		y0(2)   = MAPKK(index);
 		[t, y]  = ode23s(@f, tspan, y0);
 		col     = length(y(:, 1));
-		v(p, 2) = y(col, 8);
+		v(index, 2) = y(col, 8);
 		% MAPKKK* index 10
 		y0(2)   = MAPKKK(index);
 		[t, y]  = ode23s(@f, tspan, y0);
 		col     = length(y(:, 1));
-		v(p, 3) = y(col, 10);
-	 end
-
+		v(index, 3) = y(col, 10);
+    end
+    
  	%   Recommendation:  Normalize enzyme concentrations by max concentrations
 	normalized_dat = zeros(pts, 3)
-	for n_index = 1:length(normalized_dat)
+    v
+    [points, enzymes] = size(normalized_dat)
+	for n_index = 1:enzymes
 		normalized_dat(:, n_index) = v(:, n_index) ./ v(pts, n_index)
-	end
-
+    end
 	% Recommendation:  Use interpolation to find EC10 and EC90 points
 	% = spline(Y, X, [a b]);
 	EC_pts(1,:) = spline(normalized_dat(:,1), MAPK, [0.10, 0.50, 0.90]);
@@ -95,13 +96,15 @@ function n = HW2_Template()
 	% Hill Coefficient Calculation
 	n_h = log(81) ./ log(EC_pts(:, 3) ./ EC_pts(:, 1));
 
-
 	% Plots (Make sure all figures are labeled with legends and axes titles)
 	% Concentrations vs. time
-	figure;
-	plot(t, [ y(:,5), y(:,8), y(:,10)]);
-
-
+	Font = 12;
+    figure;
+	plot(t, [ y(:, 5), y(:, 8), y(:, 10), y(:, 3), y(:, 6), y(:, 9)]);
+    xlabel('Time (min)', 'FontSize', Font);
+    ylabel('Conc. (uM)', 'FontSize', Font);
+    title('Species Conc. vs Time for [E1]_0 = 0.1uM', 'FontSize', Font);
+    legend('MAPK-PP','MAPKK-PP','MAPKKK*','MAPK','MAPKK','MAPKKK');
 	% Plots for Figure2B
 	% figure;
 	% semilogx();
@@ -137,7 +140,7 @@ function n = HW2_Template()
 	%end
 	% plot();
 	% legend();
-end;
+return;
 
 %------------------------Evaluation function------------------------------------------------------------------
 function dydt = f(t, y)
