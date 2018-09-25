@@ -5,12 +5,13 @@
  % Sections of this code come from Upinder S. Bhalla and NCBS
 
 function n = SunGordon_HW2()
-	clear all;  close all; clc;
+	% clear all;  close all; clc;
 	% Using default run time from 0 to 100
 	tspan = [0, 30];
 	% Initial conditions of 14 unbuffered molecules + 10 enzyme-substrate complexes
-	y0 = [0.0003; 0.1; 1.2; 0; 0; 1.2; 0; 0; 0.003; 0; 0.0003; 0.0003; 0.12; 0.12; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0];
-
+	y0 = [0.0003; 0.1; 1.2; 0; 0; 1.2; 0; 0; 0.003; 0; 0.0003; 0.0003; 0.12; 0.12; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0;];
+	% Modification
+	y0 = [0.1; 0.1; 1.2; 0; 0; 1.2; 0; 0; 0.003; 0; 0.0003; 0.0003; 0.12; 0.12; 0.1; 0; 0; 0; 0; 0; 0; 0; 0; 0;];
 	% Molecule names
 	% 1	E2
 	% 2	INPUT(E1)
@@ -46,13 +47,13 @@ function n = SunGordon_HW2()
 	% A different stimulus range will be used for each enzyme
 	stim = zeros(pts, 3);
 	% MAPKhas a narrow range due to ultrasensitivity
-	MAPK = logspace(-0.6198, 0.7782, pts)';
+	MAPK = logspace(-6, -3, pts)';
 	% MAPKK has a medium range
-	MAPKK = logspace(-0.6198, 0.7782, pts)';
+	MAPKK = logspace(-6, -2, pts)';
 	% MAPKKK has a broad stimulus range
-	MAPKKK = logspace(-0.22, 1.1761, pts)';
+	MAPKKK = logspace(-6, 0, pts)';
 
-
+	input_vals = [MAPK, MAPKK, MAPKKK];
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%   Get your s.s. enzyme concentrations from the ODE solver here
 	%   Likely want a loop / a few loops for solving over stimulus range
@@ -63,34 +64,35 @@ function n = SunGordon_HW2()
 
 	for index = 1:pts
 		% MAPK-P Index 5
-		y0(2)   = MAPK(index);
+		y0(2)   = input_vals(index, 1);
 		[t, y]  = ode23s(@f, tspan, y0);
 		col     = length(y(:, 1));
 		v(index, 1) = y(col, 5);
 		% MAPKK-PP INdex 8
-		y0(2)   = MAPKK(index);
+		y0(2)   = input_vals(index, 2);
 		[t, y]  = ode23s(@f, tspan, y0);
 		col     = length(y(:, 1));
 		v(index, 2) = y(col, 8);
 		% MAPKKK* index 10
-		y0(2)   = MAPKKK(index);
+		y0(2)   = input_vals(index, 3);
 		[t, y]  = ode23s(@f, tspan, y0);
 		col     = length(y(:, 1));
 		v(index, 3) = y(col, 10);
     end
-    
+
  	%   Recommendation:  Normalize enzyme concentrations by max concentrations
 	normalized_dat = zeros(pts, 3);
-    
+    [pts, enzymes] =size(normalized_dat);
+
 	for n_index = 1:enzymes
 		normalized_dat(:, n_index) = v(:, n_index) ./ v(pts, n_index);
     end
 	% Recommendation:  Use interpolation to find EC10 and EC90 points
 	% = spline(Y, X, [a b]);
-	EC_pts(1,:) = spline(normalized_dat(:,1), MAPK, [0.10, 0.50, 0.90]);
-	EC_pts(2,:) = spline(normalized_dat(:,2), MAPKK, [0.10, 0.50, 0.90]);
-	EC_pts(3,:) = spline(normalized_dat(:,3), MAPKKK, [0.10, 0.50, 0.90]);
-    
+	EC_pts(1, :) = spline(normalized_dat(:, 1), MAPK, [0.10, 0.50, 0.90]);
+	EC_pts(2, :) = spline(normalized_dat(:, 2), MAPKK, [0.10, 0.50, 0.90]);
+	EC_pts(3, :) = spline(normalized_dat(:, 3), MAPKKK, [0.10, 0.50, 0.90]);
+
 	% Hill Coefficient Calculation
 	n_h = log(81) ./ log(EC_pts(:, 3) ./ EC_pts(:, 1));
 
@@ -103,41 +105,45 @@ function n = SunGordon_HW2()
     ylabel('Conc. (uM)', 'FontSize', Font);
     title('Species Conc. vs Time for [E1]_0 = 0.1uM', 'FontSize', Font);
     legend('MAPK-PP','MAPKK-PP','MAPKKK*','MAPK','MAPKK','MAPKKK');
+	% saveas(gcf,'speciesConc_time.png')
 	% Plots for Figure2B
-	% figure;
-	% semilogx();
-	% hold on;
-	% semilogx(,'r');
-	% semilogx(,'g');
-	% plot([10^-6 0.1],[0.1 0.1], 'black');
-	% plot([10^-6 0.1],[0.9 0.9], 'black');
-	% legend();
-	% title();
-	% xlabel();
-	% ylabel();
+	figure;
 
+	semilogx(MAPK, normalized_dat(:, 1));
+	hold on
+	semilogx(MAPKK, normalized_dat(:, 2),'r');
+	semilogx(MAPKKK, normalized_dat(:, 3),'g');
+	plot([10^-6 1],[0.1 0.1], 'black');
+	plot([10^-6 1],[0.9 0.9], 'black');
+	legend('MAPK', 'MAPKK', 'MAPKKK');
+	title('Figure 2B', 'FontSize', Font);
+	xlabel('Input Stimulus E1_{tot} (nM)', 'FontSize', Font);
+	ylabel('Predicted S.S. Kinase Activity', 'FontSize', Font);
+	% saveas(gcf,'Fig2B.png')
 	% Plot for Hill Coefficient Calculation (Figure 2A)
-	% hold off;
-	% figure;
-	% plot();
-	% hold on;
-	% plot(,'r');
-	% plot(,'g');
-	% title();
-	% xlabel();
-	% ylabel();
-	% axis([]);
+	figure;
+	hold on;
+	plot(MAPK ./ EC_pts(1, 2), normalized_dat(:, 1), 'b');
+	plot(MAPKK ./ EC_pts(2, 2), normalized_dat(:, 2), 'r');
+	plot(MAPKKK ./ EC_pts(3, 2), normalized_dat(:, 3), 'g');
+	title('Figure 2A', 'FontSize', Font);
+	xlabel('Input Stimulus E1_{tot} (nM)', 'FontSize', Font);
+	ylabel('Predicted S.S. Kinase Activity', 'FontSize', Font);
+	axis([0 6 0 1]);
 
 	% Evaluate Hill Eqn Curves of Comparable Steepness to Plot
 	% These plots are just overlaid onto the Figure 2A plots (can be black
 	% curves)
 
 	%Recommendation:
-	%for 1:3
-	%
-	%end
-	% plot();
-	% legend();
+	for indx = 1:enzymes
+		hill_curve_fit(:, indx) = Hill_equation([n_h(indx), EC_pts(indx, 2)], input_vals(:, indx));
+	end
+	plot(MAPK ./ EC_pts(1, 2), hill_curve_fit(:, 1), 'k-.');
+	plot(MAPKK ./ EC_pts(2, 2), hill_curve_fit(:, 2), 'k-.');
+	plot(MAPKKK ./ EC_pts(3, 2), hill_curve_fit(:, 3), 'k-.');
+	legend('MAPK','MAPKK','MAPKKK','Hill Eqn Curves');
+	% saveas(gcf,'Fig2A.png')
 return;
 
 %------------------------Evaluation function------------------------------------------------------------------
