@@ -84,29 +84,22 @@ function n = HW2_Template()
 	for n_index = 1:length(normalized_dat)
 		normalized_dat(:, n_index) = v(:, n_index) ./ v(pts, n_index)
 	end
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
 
 	% Recommendation:  Use interpolation to find EC10 and EC90 points
 	% = spline(Y, X, [a b]);
-
-
-
-	% Use interpolation to find EC50 points
+	EC_pts(1,:) = spline(normalized_dat(:,1), MAPK, [0.10, 0.50, 0.90]);
+	EC_pts(2,:) = spline(normalized_dat(:,2), MAPKK, [0.10, 0.50, 0.90]);
+	EC_pts(3,:) = spline(normalized_dat(:,3), MAPKKK, [0.10, 0.50, 0.90]);
 
 
 	% Hill Coefficient Calculation
-	% n =                    % The equation is found in the lecture notes
-
+	n_h = log(81) ./ log(EC_pts(:, 3) ./ EC_pts(:, 1));
 
 
 	% Plots (Make sure all figures are labeled with legends and axes titles)
 	% Concentrations vs. time
 	figure;
-	plot(t, y);
+	plot(t, [ y(:,5), y(:,8), y(:,10)]);
 
 
 	% Plots for Figure2B
