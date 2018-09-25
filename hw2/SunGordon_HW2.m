@@ -10,8 +10,7 @@ function n = SunGordon_HW2()
 	tspan = [0, 30];
 	% Initial conditions of 14 unbuffered molecules + 10 enzyme-substrate complexes
 	y0 = [0.0003; 0.1; 1.2; 0; 0; 1.2; 0; 0; 0.003; 0; 0.0003; 0.0003; 0.12; 0.12; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0;];
-	% Modification
-	y0 = [0.1; 0.1; 1.2; 0; 0; 1.2; 0; 0; 0.003; 0; 0.0003; 0.0003; 0.12; 0.12; 0.1; 0; 0; 0; 0; 0; 0; 0; 0; 0;];
+
 	% Molecule names
 	% 1	E2
 	% 2	INPUT(E1)
@@ -105,7 +104,7 @@ function n = SunGordon_HW2()
     ylabel('Conc. (uM)', 'FontSize', Font);
     title('Species Conc. vs Time for [E1]_0 = 0.1uM', 'FontSize', Font);
     legend('MAPK-PP','MAPKK-PP','MAPKKK*','MAPK','MAPKK','MAPKKK');
-	% saveas(gcf,'speciesConc_time.png')
+	saveas(gcf,'speciesConc_time.png')
 	% Plots for Figure2B
 	figure;
 
@@ -119,7 +118,7 @@ function n = SunGordon_HW2()
 	title('Figure 2B', 'FontSize', Font);
 	xlabel('Input Stimulus E1_{tot} (nM)', 'FontSize', Font);
 	ylabel('Predicted S.S. Kinase Activity', 'FontSize', Font);
-	% saveas(gcf,'Fig2B.png')
+	saveas(gcf,'Fig2B.png')
 	% Plot for Hill Coefficient Calculation (Figure 2A)
 	figure;
 	hold on;
@@ -143,7 +142,7 @@ function n = SunGordon_HW2()
 	plot(MAPKK ./ EC_pts(2, 2), hill_curve_fit(:, 2), 'k-.');
 	plot(MAPKKK ./ EC_pts(3, 2), hill_curve_fit(:, 3), 'k-.');
 	legend('MAPK','MAPKK','MAPKKK','Hill Eqn Curves');
-	% saveas(gcf,'Fig2A.png')
+	saveas(gcf,'Fig2A.png')
 return;
 
 %------------------------Evaluation function------------------------------------------------------------------
