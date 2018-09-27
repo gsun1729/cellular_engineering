@@ -12,7 +12,7 @@ function n = SunGordon_HW2_Mod()
 	% Modification
     % Increase initial concentration of enzymes 11-14
     % Original_y0 = [0.0003; 0.1; 1.2; 0; 0; 1.2; 0; 0; 0.003; 0; 0.0003; 0.0003; 0.12; 0.12; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0;];
-    y0 = [0.0003; 0.1; 1.2; 0; 0; 1.2; 0; 0; 0.003; 0; 0.3; 0.3; 1.2; 1.2; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0;];
+               y0 = [0.0003; 0.1; 1.2; 0; 0; 1.2; 0; 0; 0.003; 0; 0.3; 0.3; 1.2; 1.2; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0;];
 	% Molecule names
 	% 1	E2
 	% 2	INPUT(E1)
@@ -106,7 +106,7 @@ function n = SunGordon_HW2_Mod()
     ylabel('Conc. (uM)', 'FontSize', Font);
     title('Species Conc. vs Time for [E1]_0 = 0.1uM', 'FontSize', Font);
     legend('MAPK-PP','MAPKK-PP','MAPKKK*','MAPK','MAPKK','MAPKKK');
-	% saveas(gcf,'speciesConc_time.png')
+	saveas(gcf,'speciesConc_time_Mod.png')
 	% Plots for Figure2B
 	figure;
 

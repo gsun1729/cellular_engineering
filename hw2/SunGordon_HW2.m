@@ -138,10 +138,10 @@ function n = SunGordon_HW2()
 	for indx = 1:enzymes
 		hill_curve_fit(:, indx) = Hill_equation([n_h(indx), EC_pts(indx, 2)], input_vals(:, indx));
 	end
-	plot(MAPK ./ EC_pts(1, 2), hill_curve_fit(:, 1), 'k-.');
-	plot(MAPKK ./ EC_pts(2, 2), hill_curve_fit(:, 2), 'k-.');
-	plot(MAPKKK ./ EC_pts(3, 2), hill_curve_fit(:, 3), 'k-.');
-	legend('MAPK','MAPKK','MAPKKK','Hill Eqn Curves');
+	plot(MAPK ./ EC_pts(1, 2), hill_curve_fit(:, 1), 'b-.');
+	plot(MAPKK ./ EC_pts(2, 2), hill_curve_fit(:, 2), 'r-.');
+	plot(MAPKKK ./ EC_pts(3, 2), hill_curve_fit(:, 3), 'g-.');
+	legend('MAPK','MAPKK','MAPKKK','MAPK Fit', 'MAPKK Fit', 'MAPKKK Fit');
 	saveas(gcf,'Fig2A.png')
 return;
 
