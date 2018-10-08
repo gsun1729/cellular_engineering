@@ -52,6 +52,7 @@ function done = hw3_template()
   gamma   = [3, 2, 1.1];
   map     = zeros(pts,pts);
   figure_num = 0;
+  # Cycle through variations in Beta.
   for indx = 1:length(beta)
     figure_num = figure_num + 1;
     for m=1:pts
@@ -95,6 +96,7 @@ function done = hw3_template()
   g   = 1;
   n   = [2.0015, 0.1, 1, 3];
   K   = 2.9618e-5;
+  # Cycle through variations in eta.
   for i=1:length(n)
     theta   = [a1, a2, b, g, n(i), K, 0];
     IPTG    = logspace(-6, -2, 50);
@@ -137,7 +139,7 @@ function done = hw3_template()
     semilogx(IPTG, vb, 'k');
     semilogx(IPTG, vc, 'b');
     if i == 1
-      title(['Figure 5a: Steady-state gene expression after 17-h induction, gamma', num2str(n(i))]);
+      title(['Figure 5a: Steady-state gene expression after 17-h induction, gamma=', num2str(n(i))]);
       xlabel('[IPTG] (M)')
       ylabel('Normalized GFP expression')
       legend('pTAK117 toggle (low) - stable s.s.','pTAK117 toggle (high) - unstable s.s.','pTAK102 control');
@@ -151,7 +153,7 @@ function done = hw3_template()
     end
     hold off;
   end
-
+  close all;
   done = 1;
 return;
 
