@@ -6,198 +6,220 @@ clear all;  close all;
 %---------------------------------------------------SET UP--------------------------------------------------------------
 
 %Set Parameters
-B       =              % 1 / person day
-c       =                % 
-p       =               % 
-N       =              % 
-r1      =               % 1 / days
-r2      =               % 1 / days
-r3      =               % 1 / days
-r4      =              % 1 / days
-n       =             % 
-u       =                % 1 / day (TV)
-h       =               % 
-alpha   =             % 1 / days
-v0      =             % 
-v1      =            % 
-del     =              % 
-f       =              % 
-I_t0    = 
+B       = 1e-7;             % 1 / person day
+c       = 50;               % 
+p       = 0.5;              % 
+N       = 1e7;             % 
+r1      = 1/3;              % 1 / days
+r2      = 1/8;              % 1 / days
+r3      = 1/3;              % 1 / days
+r4      = 1/12;             % 1 / days
+n       = 5000;             % 
+u       = 50;               % 1 / day (TV)
+h       = 0.9;              % 
+alpha   = 1/5;            % 1 / days
+v0      = 0.975;            % 
+v1      = 0.975;           % 
+del     = 0.3;             % 
+f       = 1e-6;             % 
+I_t0    = 1e3;
  
 %Pack Parameters
 theta = [B, c, p, N, r1, r2, r3, r4, n, u, h, alpha, v0, v1, del, f]; 
-
-
 % Set initial conditions for Phase I
+tspan = [0 5];
+initial_conditions = [N I_t0 0 0 0 0 0];
 
 
 % Solve ODEs for Phase I
-
-
-[t, y]  = ode23s( @    ,    ,     ,   , theta );
-
-
-
+[t, y]  = ode23s(@phaseI, tspan, initial_conditions,  [], theta);
+final_state = y(end,:);
+pad = zeros(length(y(:,1)), 10);
+y_padded = [y(:,1:2),pad, y(:,3:end)];
 %------------------------------------------------Trace Vaccination----------------------------------------------------------------
 
 % Set initial conditions for Phase II TV
-
-
+p2_initial_cond = [final_state(1:end-2) 0 0 0 0 0 0 0 0 0 0 final_state(end-1:end)];
+tspan2 = [0 300];
+% % Variables
+% % S0      = y(1);
+% % I0_1    = y(2);
+% % I0_2    = y(3);
+% % I0_3    = y(4);
+% % I0_4    = y(5);
+% % Q_0     = y(6);
+% % Q_1     = y(7);
+% % Q_2     = y(8);
+% % Q_3     = y(9);
+% % H       = y(10);
+% % S1      = y(11);
+% % I1_1    = y(12);
+% % I1_2    = y(13);
+% % I1_3    = y(14);
+% % I1_4    = y(15);
+% % Z       = y(16);
+% % D       = y(17)
 % Solve ODEs for Phase II TV
 
-
-[t2, y2]  = ode23s( @  ,    ,     ,  , theta);
+[t2, y2]  = ode23s( @phaseII, tspan2, p2_initial_cond, [], theta);
 
 % Keep track of infected, queued, and dead
 
-L1   = length(t);
-L2   = length(t2);
+t2_inc = t2 + 5;
+TV_merged_time = [t; t2_inc(2:end)];
+merged_TV = [y_padded; y2(2:end,:)];
+% TV_I = sum(merged_TV(:,2:5), 2) + sum(merged_TV(:,12:15), 2);
+TV_I = sum(merged_TV(:,2:5), 2) + sum(merged_TV(:,12:15), 2)
+TV_Q = sum(merged_TV(:,6:9), 2);
+TV_D = merged_TV(:,17);
 
-YourArray = zeros(L1+L2,1);
-
-for m=1:L1
-   YourArray(m) = t(m);
-   
-end
-for n=1:L2
-    YourArray(n+L1) = t2(n)+5; 
-    
-end
-
-
-
-%------------------------------------------------Mass Vaccination-------------------------------------------------------------------
-
+% %------------------------------------------------Mass Vaccination-------------------------------------------------------------------
+% 
 % Set initial conditions for Phase II MV
-
-
+final_state(1)
+MV_initial_cond = [final_state(1:end-2) final_state(1) 0 0 0 0 0 0 0 0 0 final_state(end-1:end)];
+MV_initial_cond
 theta(10) = 200;
+tspan3 = [0 300];
 
 %Solve ODEs for Phase II MV
 
-[t3, y3]  = ode23s( @  ,    ,     ,  , theta);
-
+[t3, y3]  = ode23s(@phaseII, tspan3, MV_initial_cond,  [], theta);
+plot(t3, y3)
 % Keep track of infected, queued, and dead
+t3_inc = t3 + 5;
+MV_merged_time = [t; t3_inc(2:end)];
+% plot(t3, y3(:,))
+merged_MV = [y_padded; y3(2:end,:)];
+MV_I = sum(merged_MV(:,2:5), 2) + sum(merged_MV(:,12:15), 2)
+MV_Q = sum(merged_MV(:,6:9), 2);
+MV_D = merged_MV(:,17);
 
-L3       = length(t3);
-
-YourArray2 = zeros(L1+L3,1);
-
-for m=1:L1
-   YourArray2(m) = t(m);
-   
-end
-for n=1:L3
-    YourArray2(n+L1) = t3(n)+5; 
-    
-end
-
-
-
+% return
 %-------------------------------------------------------------------------Plots------------------------------------------------
 
 figure;
-[AX,H1,H2] = plotyy( YourTime1, YourY1, YourTime2, YourY2);
+[AX,H1,H2] = plotyy(TV_merged_time, TV_Q, TV_merged_time, TV_I);
 set(get(AX(1),'Ylabel'),'String','Number in Queue');
 set(get(AX(2),'Ylabel'),'String','Number Infected');
 set(H1,'LineStyle',':');
 set(H2,'LineStyle','-');
+title('Trace Vaccination');
+xlabel('Time (days)');
+legend(H1, 'queue');
+legend(H2, 'infected');
+
+figure;
+[AX,H3,H4] = plotyy(MV_merged_time, MV_Q, MV_merged_time, MV_I);
+set(get(AX(1),'Ylabel'),'String','Number in Queue');
+set(get(AX(2),'Ylabel'),'String','Number Infected');
+set(H3,'LineStyle',':');
+set(H4,'LineStyle','-');
 title('MyTitle');
 xlabel('YourTime');
-legend(H1, 'YourY1');
-legend(H2, 'YourY2');
+legend(H3, 'YourY1');
+legend(H4, 'YourY2');
+% [AX,H1,H2] = plotyy( YourTime1, YourY1, YourTime2, YourY2);
+% set(get(AX(1),'Ylabel'),'String','Number in Queue');
+% set(get(AX(2),'Ylabel'),'String','Number Infected');
+% set(H1,'LineStyle',':');
+% set(H2,'LineStyle','-');
+% title('MyTitle');
+% xlabel('YourTime');
+% legend(H1, 'YourY1');
+% legend(H2, 'YourY2');
 
-
-
-
-%------------------------------------------------Death Rate Comparison------------------------------------------------------------    
-    
-% CDC policy (CDC guidelines are modeled by switching from TV to MV 28 days after the start of TV (e.g. on day 33 in the base case))
-
-
-% Set initial conditions 
-
-% Solve
-
-[t4, y4]  = ode23s( @  ,    ,     ,  , theta);
-
-
-% Set initial conditions 
-
-% Solve
-
-[t5, y5]  = ode23s( @  ,    ,     ,  , theta);
-
-
-% Combine results 
-
-
-
-% Plot TV vs MV vs CDC Policy
-
-figure;
-plot( , );
-hold on;
-plot(   ,    , 'r');
-plot(   ,    , 'g');
-title('Your Title for Small Pox Deaths');
-xlabel('  ');
-ylabel('   ');
-legend('TV', 'MV', 'CDC Policy');
-hold off;
-
-
-
-
-%------------------------Sensitivity Analysis----------------------------
-
-% Fraction of population initially infected
-
-tspan   = [0 5];
-tspan2  = [0 400];
-dead    = zeros(50,1);
-dead2   = zeros(50,1);
-frac    = zeros(50,1);
-for f=1:50
-    frac(f) = % such as f divided by something 
-    i0      = % such as frac(f) multiplied by something
-    init    = [N i0 0 0 0 0 0];
-    [t, y]  = ode23s(@phaseI, tspan, init, [], theta);
-    
-    init2   = [ ];
-    theta(10) = 50;
-    [t2, y2] = ode23s(@phaseII, tspan2, init2, [], theta);
-    
-    dead(f) = y2( , 17);    
-    
-    init4   = [ ];
-    theta(10) = 200;
-    [t4, y4]  = ode23s(@phaseII, tspan2, init4, [], theta);
-   
-    dead2(f)  = y4( , 17);    
-    
-end
-
-figure;
-plot(frac, dead);
-hold on;
-plot(frac, dead2, 'r');
-title(' ');
-xlabel('Fraction of Population Initially Infected');
-ylabel('Number of Deaths');
-legend('TV', 'MV');
-hold off;
-
-
-
-% Choose another parameter to vary to conduct sensitivity analysis
-
-
-
-
-
-
-
+% 
+% 
+% 
+% %------------------------------------------------Death Rate Comparison------------------------------------------------------------    
+%     
+% % CDC policy (CDC guidelines are modeled by switching from TV to MV 28 days after the start of TV (e.g. on day 33 in the base case))
+% 
+% 
+% % Set initial conditions 
+% 
+% % Solve
+% 
+% [t4, y4]  = ode23s( @  ,    ,     ,  , theta);
+% 
+% 
+% % Set initial conditions 
+% 
+% % Solve
+% 
+% [t5, y5]  = ode23s( @  ,    ,     ,  , theta);
+% 
+% 
+% % Combine results 
+% 
+% 
+% 
+% % Plot TV vs MV vs CDC Policy
+% 
+% figure;
+% plot( , );
+% hold on;
+% plot(   ,    , 'r');
+% plot(   ,    , 'g');
+% title('Your Title for Small Pox Deaths');
+% xlabel('  ');
+% ylabel('   ');
+% legend('TV', 'MV', 'CDC Policy');
+% hold off;
+% 
+% 
+% 
+% 
+% %------------------------Sensitivity Analysis----------------------------
+% 
+% % Fraction of population initially infected
+% 
+% tspan   = [0 5];
+% tspan2  = [0 400];
+% dead    = zeros(50,1);
+% dead2   = zeros(50,1);
+% frac    = zeros(50,1);
+% for f=1:50
+%     frac(f) = % such as f divided by something 
+%     i0      = % such as frac(f) multiplied by something
+%     init    = [N i0 0 0 0 0 0];
+%     [t, y]  = ode23s(@phaseI, tspan, init, [], theta);
+%     
+%     init2   = [ ];
+%     theta(10) = 50;
+%     [t2, y2] = ode23s(@phaseII, tspan2, init2, [], theta);
+%     
+%     dead(f) = y2( , 17);    
+%     
+%     init4   = [ ];
+%     theta(10) = 200;
+%     [t4, y4]  = ode23s(@phaseII, tspan2, init4, [], theta);
+%    
+%     dead2(f)  = y4( , 17);    
+%     
+% end
+% 
+% figure;
+% plot(frac, dead);
+% hold on;
+% plot(frac, dead2, 'r');
+% title(' ');
+% xlabel('Fraction of Population Initially Infected');
+% ylabel('Number of Deaths');
+% legend('TV', 'MV');
+% hold off;
+% 
+% 
+% 
+% % Choose another parameter to vary to conduct sensitivity analysis
+% 
+% 
+% 
+% 
+% 
+% 
+% 
 
 return;
 
