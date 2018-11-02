@@ -1,7 +1,7 @@
 
 
 function y0 = HW4_Template2018()
-clear all;  close all;
+clear all;  close all; clc;
 
 %---------------------------------------------------SET UP--------------------------------------------------------------
 
@@ -76,11 +76,11 @@ TV_D = merged_TV(:,17);
 % %------------------------------------------------Mass Vaccination-------------------------------------------------------------------
 % 
 % Set initial conditions for Phase II MV
-final_state(1)
-MV_initial_cond = [final_state(1:end-2) final_state(1) 0 0 0 0 0 0 0 0 0 final_state(end-1:end)];
+MV_initial_cond = [final_state(1:end-2) 0 0 0 0 0 0 0 0 0 0 final_state(end-1:end)];
+MV_initial_cond = [0 0 0 0 final_state(5) final_state(1) final_state(2) final_state(3) final_state(4) 0 0 0 0 0 0 final_state(end-1:end)]
 MV_initial_cond
 theta(10) = 200;
-tspan3 = [0 300];
+tspan3 = [0 50];
 
 %Solve ODEs for Phase II MV
 
@@ -91,7 +91,7 @@ t3_inc = t3 + 5;
 MV_merged_time = [t; t3_inc(2:end)];
 % plot(t3, y3(:,))
 merged_MV = [y_padded; y3(2:end,:)];
-MV_I = sum(merged_MV(:,2:5), 2) + sum(merged_MV(:,12:15), 2)
+MV_I = sum(merged_MV(:,2:5), 2) + sum(merged_MV(:,12:15), 2) + sum(merged_MV(:,7:9), 2);
 MV_Q = sum(merged_MV(:,6:9), 2);
 MV_D = merged_MV(:,17);
 
@@ -109,28 +109,18 @@ xlabel('Time (days)');
 legend(H1, 'queue');
 legend(H2, 'infected');
 
+
 figure;
 [AX,H3,H4] = plotyy(MV_merged_time, MV_Q, MV_merged_time, MV_I);
 set(get(AX(1),'Ylabel'),'String','Number in Queue');
 set(get(AX(2),'Ylabel'),'String','Number Infected');
 set(H3,'LineStyle',':');
 set(H4,'LineStyle','-');
-title('MyTitle');
-xlabel('YourTime');
-legend(H3, 'YourY1');
-legend(H4, 'YourY2');
-% [AX,H1,H2] = plotyy( YourTime1, YourY1, YourTime2, YourY2);
-% set(get(AX(1),'Ylabel'),'String','Number in Queue');
-% set(get(AX(2),'Ylabel'),'String','Number Infected');
-% set(H1,'LineStyle',':');
-% set(H2,'LineStyle','-');
-% title('MyTitle');
-% xlabel('YourTime');
-% legend(H1, 'YourY1');
-% legend(H2, 'YourY2');
+title('Mass Vaccination');
+xlabel('Time (days)');
+legend(H3, 'queue');
+legend(H4, 'infected');
 
-% 
-% 
 % 
 % %------------------------------------------------Death Rate Comparison------------------------------------------------------------    
 %     
