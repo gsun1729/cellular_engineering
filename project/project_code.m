@@ -146,93 +146,93 @@ abgL_i_data_ES = cell2mat(end_state(abgL_i_data));
 figure('units','normalized','outerposition',[0 0 1 1]);
 hold on;
 histogram(L_data_ES(:,2), 'Normalization','pdf');
-histogram(L_i_data_ES(:,2), 'Normalization','pdf');
+% histogram(L_i_data_ES(:,2), 'Normalization','pdf');
 title("Ligand [L] Count at 5s");
 xlabel('Units [count]');
 ylabel('Probability');
-legend('External','Internal');
-saveas(gcf, "L_ES_i.png")
+% legend('External','Internal');
+saveas(gcf, "L_ES.png")
 
 figure('units','normalized','outerposition',[0 0 1 1]);
 hold on;
 histogram(a_data_ES(:,2), 'Normalization','pdf');
-histogram(a_i_data_ES(:,2), 'Normalization','pdf');
+% histogram(a_i_data_ES(:,2), 'Normalization','pdf');
 title("Alpha subunit [a] Count at 5s");
 xlabel('Units [count]');
 ylabel('Probability');
-legend('External','Internal');
-saveas(gcf, "a_ES_i.png")
+% legend('External','Internal');
+saveas(gcf, "a_ES.png")
 
 
 figure('units','normalized','outerposition',[0 0 1 1]);
 hold on;
 histogram(b_data_ES(:,2), 'Normalization','pdf');
-histogram(b_i_data_ES(:,2), 'Normalization','pdf');
+% histogram(b_i_data_ES(:,2), 'Normalization','pdf');
 title("Beta subunit [b] Count at 5s");
 xlabel('Units [count]');
 ylabel('Probability');
-legend('External','Internal');
-saveas(gcf, "b_ES_i.png")
+% legend('External','Internal');
+saveas(gcf, "b_ES.png")
 
 figure('units','normalized','outerposition',[0 0 1 1]);
 hold on;
 histogram(g_data_ES(:,2), 'Normalization','pdf');
-histogram(g_i_data_ES(:,2), 'Normalization','pdf');
+% histogram(g_i_data_ES(:,2), 'Normalization','pdf');
 title("Gamma subunit [g] Count at 5s");
 xlabel('Units [count]');
 ylabel('Probability');
-legend('External','Internal');
-saveas(gcf, "g_ES_i.png")
+% legend('External','Internal');
+saveas(gcf, "g_ES.png")
 
 figure('units','normalized','outerposition',[0 0 1 1]);
 hold on;
 histogram(aL_data_ES(:,2), 'Normalization','pdf');
-histogram(aL_i_data_ES(:,2), 'Normalization','pdf');
+% histogram(aL_i_data_ES(:,2), 'Normalization','pdf');
 title("Alpha-Ligand subunit [aL] Count at 5s");
 xlabel('Units [count]');
 ylabel('Probability');
-legend('External','Internal');
-saveas(gcf, "aL_ES_i.png")
+% legend('External','Internal');
+saveas(gcf, "aL_ES.png")
 
 figure('units','normalized','outerposition',[0 0 1 1]);
 hold on;
 histogram(bL_data_ES(:,2), 'Normalization','pdf');
-histogram(bL_i_data_ES(:,2), 'Normalization','pdf');
+% histogram(bL_i_data_ES(:,2), 'Normalization','pdf');
 title("Beta-Ligand subunit [bL] Count at 5s");
 xlabel('Units [count]');
 ylabel('Probability');
-legend('External','Internal');
-saveas(gcf, "bL_ES_i.png")
+% legend('External','Internal');
+saveas(gcf, "bL_ES.png")
 
 figure('units','normalized','outerposition',[0 0 1 1]);
 hold on;
 histogram(abL_data_ES(:,2), 'Normalization','pdf');
-histogram(abL_i_data_ES(:,2), 'Normalization','pdf');
+% histogram(abL_i_data_ES(:,2), 'Normalization','pdf');
 title("Alpha-Beta-Ligand subunit [abL] Count at 5s");
 xlabel('Units [count]');
 ylabel('Probability');
-legend('External','Internal');
-saveas(gcf, "abL_ES_i.png")
+% legend('External','Internal');
+saveas(gcf, "abL_ES.png")
 
 figure('units','normalized','outerposition',[0 0 1 1]);
 hold on;
 histogram(bgL_data_ES(:,2), 'Normalization','pdf');
-histogram(bgL_i_data_ES(:,2), 'Normalization','pdf');
+% histogram(bgL_i_data_ES(:,2), 'Normalization','pdf');
 title("Beta-Gamma-Ligand subunit [bgL] Count at 5s");
 xlabel('Units [count]');
 ylabel('Probability');
-legend('External','Internal');
-saveas(gcf, "bgL_ES_i.png")
+% legend('External','Internal');
+saveas(gcf, "bgL_ES.png")
 
 figure('units','normalized','outerposition',[0 0 1 1]);
 hold on;
 histogram(abgL_data_ES(:,2), 'Normalization','pdf');
-histogram(abgL_i_data_ES(:,2), 'Normalization','pdf');
+% histogram(abgL_i_data_ES(:,2), 'Normalization','pdf');
 title("Alpha-Beta-Gamma-Ligand subunit [bgL] Count at 5s");
 xlabel('Units [count]');
 ylabel('Probability');
-legend('External','Internal');
-saveas(gcf, "abgL_ES_i.png")
+% legend('External','Internal');
+saveas(gcf, "abgL_ES.png")
 
 
 
@@ -280,7 +280,7 @@ function history = run_simulation(initial_conditions, S_array, K_array, t_max)
 %         history = [history;t,alpha',Z',rm',x_advance'];
         history = [history;t,x_advance'];
     end
-%     plot(history(:,1), history(:,77:99);
+%     plot(history(:,1),history(77:94));
 end
 
 
