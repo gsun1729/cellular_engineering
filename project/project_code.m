@@ -90,55 +90,166 @@ initial_cond(19) = initial_cond(2);
 initial_cond(20) = initial_cond(3);
 initial_cond(21) = initial_cond(4);
 
+
+
 %%
-hold on
-for i = 1:1
-    i
-    Z = zeros(num_rxn, 1);
-    alpha = zeros(num_rxn, 1);
-    t = 0;
-    identity = eye(num_rxn);
-
-    num_simulations = 5;
-    t_max = 2.5;
-
-    % history = [t, alpha', z', zeros(1,num_rxn), initial_cond'];
-    x = initial_cond;
-
-    %%%%%% start of loops
-    rxn_order= [];
-    history = [t,alpha',Z',zeros(1,num_rxn),x'];
-    while t<t_max
-        alpha = update_alpha(Z, SA, k_array, initial_cond);
-        rm = alpha/sum(alpha);
-        rxn_q = rxn_number(rm);
-        rxn_order = [rxn_order; rxn_q];
-        try
-            Z = Z + identity(:,rxn_q);
-        catch
-    %         fprintf('Rxn terminated early at run %i, iter %i\n'
-            fprintf('RXN terminated early');
-            break;
-        end
-        alpha;
-        tau = exprnd(1/sum(alpha));
-        if isnan(tau)
-            tau = 0;
-        end
-
-        t = t + tau;
-    %     w = waitforbuttonpress
-        x_advance = initial_cond + SA*Z;
-        history = [history;t,alpha',Z',rm',x_advance'];
-    end
-    plot(history(:,1),history(:,77:94)) 
-%     plot(history(:,1),history(:,85)) 
+num_simulations = 5000;
+memory = cell(num_simulations,1);
+t_max = 5;
+for iter = 1:num_simulations
+    iter
+    memory{iter} = run_simulation(initial_cond, SA, k_array, t_max);
 end
 
-%%
+%% REally ugly plotting code 
+% Retrieve 
+L_data = get_var_time_data(memory,1,2);
+a_data = get_var_time_data(memory,1,3);
+b_data = get_var_time_data(memory,1,4);
+g_data = get_var_time_data(memory,1,5);
+aL_data = get_var_time_data(memory,1,6);
+bL_data = get_var_time_data(memory,1,7);
+abL_data = get_var_time_data(memory,1,8);
+bgL_data = get_var_time_data(memory,1,9);
+abgL_data = get_var_time_data(memory,1,10);
+L_i_data = get_var_time_data(memory,1,11);
+a_i_data = get_var_time_data(memory,1,12);
+b_i_data = get_var_time_data(memory,1,13);
+g_i_data = get_var_time_data(memory,1,14);
+aL_i_data = get_var_time_data(memory,1,15);
+bL_i_data = get_var_time_data(memory,1,16);
+abL_i_data = get_var_time_data(memory,1,17);
+bgL_i_data = get_var_time_data(memory,1,18);
+abgL_i_data = get_var_time_data(memory,1,19);
 
-test = run_simulation(initial_cond, SA, k_array, 2.5);
-plot(test(:,1),test(:,77:94)) 
+L_data_ES = cell2mat(end_state(L_data));
+a_data_ES = cell2mat(end_state(a_data));
+b_data_ES = cell2mat(end_state(b_data));
+g_data_ES = cell2mat(end_state(g_data));
+aL_data_ES = cell2mat(end_state(aL_data));
+bL_data_ES = cell2mat(end_state(bL_data));
+abL_data_ES = cell2mat(end_state(abL_data));
+bgL_data_ES = cell2mat(end_state(bgL_data));
+abgL_data_ES = cell2mat(end_state(abgL_data));
+L_i_data_ES = cell2mat(end_state(L_i_data));
+a_i_data_ES = cell2mat(end_state(a_i_data));
+b_i_data_ES = cell2mat(end_state(b_i_data));
+g_i_data_ES = cell2mat(end_state(g_i_data));
+aL_i_data_ES = cell2mat(end_state(aL_i_data));
+bL_i_data_ES = cell2mat(end_state(bL_i_data));
+abL_i_data_ES = cell2mat(end_state(abL_i_data));
+bgL_i_data_ES = cell2mat(end_state(bgL_i_data));
+abgL_i_data_ES = cell2mat(end_state(abgL_i_data));
+
+
+%% Plot block
+figure('units','normalized','outerposition',[0 0 1 1]);
+hold on;
+histogram(L_data_ES(:,2), 'Normalization','pdf');
+% histogram(L_i_data_ES(:,2), 'Normalization','pdf');
+title("Ligand [L] Count at 5s");
+xlabel('Units [count]');
+ylabel('Probability');
+% legend('External','Internal');
+saveas(gcf, "L_ES.png")
+
+figure('units','normalized','outerposition',[0 0 1 1]);
+hold on;
+histogram(a_data_ES(:,2), 'Normalization','pdf');
+% histogram(a_i_data_ES(:,2), 'Normalization','pdf');
+title("Alpha subunit [a] Count at 5s");
+xlabel('Units [count]');
+ylabel('Probability');
+% legend('External','Internal');
+saveas(gcf, "a_ES.png")
+
+
+figure('units','normalized','outerposition',[0 0 1 1]);
+hold on;
+histogram(b_data_ES(:,2), 'Normalization','pdf');
+% histogram(b_i_data_ES(:,2), 'Normalization','pdf');
+title("Beta subunit [b] Count at 5s");
+xlabel('Units [count]');
+ylabel('Probability');
+% legend('External','Internal');
+saveas(gcf, "b_ES.png")
+
+figure('units','normalized','outerposition',[0 0 1 1]);
+hold on;
+histogram(g_data_ES(:,2), 'Normalization','pdf');
+% histogram(g_i_data_ES(:,2), 'Normalization','pdf');
+title("Gamma subunit [g] Count at 5s");
+xlabel('Units [count]');
+ylabel('Probability');
+% legend('External','Internal');
+saveas(gcf, "g_ES.png")
+
+figure('units','normalized','outerposition',[0 0 1 1]);
+hold on;
+histogram(aL_data_ES(:,2), 'Normalization','pdf');
+% histogram(aL_i_data_ES(:,2), 'Normalization','pdf');
+title("Alpha-Ligand subunit [aL] Count at 5s");
+xlabel('Units [count]');
+ylabel('Probability');
+% legend('External','Internal');
+saveas(gcf, "aL_ES.png")
+
+figure('units','normalized','outerposition',[0 0 1 1]);
+hold on;
+histogram(bL_data_ES(:,2), 'Normalization','pdf');
+% histogram(bL_i_data_ES(:,2), 'Normalization','pdf');
+title("Beta-Ligand subunit [bL] Count at 5s");
+xlabel('Units [count]');
+ylabel('Probability');
+% legend('External','Internal');
+saveas(gcf, "bL_ES.png")
+
+figure('units','normalized','outerposition',[0 0 1 1]);
+hold on;
+histogram(abL_data_ES(:,2), 'Normalization','pdf');
+% histogram(abL_i_data_ES(:,2), 'Normalization','pdf');
+title("Alpha-Beta-Ligand subunit [abL] Count at 5s");
+xlabel('Units [count]');
+ylabel('Probability');
+% legend('External','Internal');
+saveas(gcf, "abL_ES.png")
+
+figure('units','normalized','outerposition',[0 0 1 1]);
+hold on;
+histogram(bgL_data_ES(:,2), 'Normalization','pdf');
+% histogram(bgL_i_data_ES(:,2), 'Normalization','pdf');
+title("Beta-Gamma-Ligand subunit [bgL] Count at 5s");
+xlabel('Units [count]');
+ylabel('Probability');
+% legend('External','Internal');
+saveas(gcf, "bgL_ES.png")
+
+figure('units','normalized','outerposition',[0 0 1 1]);
+hold on;
+histogram(abgL_data_ES(:,2), 'Normalization','pdf');
+% histogram(abgL_i_data_ES(:,2), 'Normalization','pdf');
+title("Alpha-Beta-Gamma-Ligand subunit [bgL] Count at 5s");
+xlabel('Units [count]');
+ylabel('Probability');
+% legend('External','Internal');
+saveas(gcf, "abgL_ES.png")
+
+
+
+
+
+function var_data = get_var_time_data(memory_matrix, time_indx, variable_indx)
+    [num_sims, num_runs] = size(memory_matrix);
+    var_data = cell(num_sims, num_runs);
+    for i = 1:num_sims
+        extraction = memory_matrix{i}(:,variable_indx);
+        time_extract = memory_matrix{i}(:,time_indx);
+        merge = [time_extract, extraction];
+        var_data{i,num_runs} = merge;
+    end
+end
+
+
 function history = run_simulation(initial_conditions, S_array, K_array, t_max)
     [num_reagents, num_rxn] = size(S_array);
     Z = zeros(num_rxn, 1);
@@ -147,7 +258,8 @@ function history = run_simulation(initial_conditions, S_array, K_array, t_max)
     t = 0;
     x0 = initial_conditions;
     rxn_order= [];
-    history = [t,alpha',Z',zeros(1,num_rxn),x0'];
+%     history = [t,alpha',Z',zeros(1,num_rxn),x0'];
+    history = [t,x0'];
     while t<t_max
         alpha = update_alpha(Z, S_array, K_array, x0);
         rm = alpha/sum(alpha);
@@ -165,9 +277,11 @@ function history = run_simulation(initial_conditions, S_array, K_array, t_max)
         end
         t = t + tau;
         x_advance = x0 + S_array*Z;
-        history = [history;t,alpha',Z',rm',x_advance'];
+%         history = [history;t,alpha',Z',rm',x_advance'];
+        history = [history;t,x_advance'];
     end
 end
+
 
 function alpha = update_alpha(Z_array, S_array, K_array, initial_conditions)
     [num_reagents, num_rxn] = size(S_array);
@@ -195,6 +309,32 @@ function quotient = rxn_number(rm)
         if r1 < sum_R
             quotient = reaction_quotient;
             break
+        end
+    end
+    return
+end
+
+
+function clean_data = rm_extras(memory,start,stop)
+    [iter, run] = size(memory);
+    clean_data = cell(iter,run);
+    for i = 1:iter
+        for r = 1:run
+            extract = memory{i,r};
+            extract(:,start:stop)=[];
+            clean_data{i,r} = extract;
+        end
+    end
+    return
+end
+
+function end_results = end_state(cleaned_data)
+    [iter, run] = size(cleaned_data);
+    end_results = cell(iter,run);
+    for i = 1:iter
+        for r = 1:run
+            extract = cleaned_data{i,r}(end,:);
+            end_results{i,r} = extract;
         end
     end
     return
