@@ -74,11 +74,13 @@ k_array = [
     k_int
     ];
 
+num_simulations = 20;
+
 %% Define initial conditions
-L = 1000;
-a0 = 500;
-b0 = 500;
-g0 = 500;
+L = 10000;
+a0 = 2000;
+b0 = 1000;
+g0 = 800;
 % Set IC
 initial_cond = zeros(num_reagents, 1);
 initial_cond(1) = L;
@@ -91,15 +93,46 @@ initial_cond(20) = initial_cond(3);
 initial_cond(21) = initial_cond(4);
 
 
-
-%%
-num_simulations = 5000;
 memory = cell(num_simulations,1);
-t_max = 5;
+t_max = 0.008;
+
+figure
 for iter = 1:num_simulations
     iter
+    hold on
     memory{iter} = run_simulation(initial_cond, SA, k_array, t_max);
 end
+
+
+%% Define disease initial conditions
+L = 100;
+a0 = 2000;
+b0 = 500;
+g0 = 600;
+% Set IC
+initial_cond = zeros(num_reagents, 1);
+initial_cond(1) = L;
+initial_cond(2) = a0;
+initial_cond(3) = b0;
+initial_cond(4) = g0;
+
+initial_cond(19) = initial_cond(2);
+initial_cond(20) = initial_cond(3);
+initial_cond(21) = initial_cond(4);
+
+
+memory_disease = cell(num_simulations,1);
+t_max = 0.1;
+
+figure
+for iter = 1:num_simulations
+    iter
+    hold on
+    memory_disease{iter} = run_simulation(initial_cond, SA, k_array, t_max);
+end
+
+
+%%
 
 %% REally ugly plotting code 
 % Retrieve 
@@ -236,9 +269,39 @@ saveas(gcf, "abgL_ES.png")
 
 
 
+%%
+get_timept_data(memory, 2, 0.008, 1)
 
+function timept_data = get_timept_data(memory_matrix, variable_indx, time_pt, time_indx)
+    % Given a history matrix and a variable ID number, gets the value for
+    % that variable at the time_pt across all simulations. time_indx
+    % indicates location of the time array.
+    variable_data = get_var_time_data(memory_matrix, time_indx, variable_indx);
+    if time_pt == inf
+        timept_data = cell2mat(end_state(variable_data));
+    else
+        [num_sims, num_runs] = size(variable_data);
+        timept_data = zeros(num_sims, 2);
+        for i = 1:num_sims
+            time_list = variable_data{i}(:,1);
+            for t = 1:length(time_list)
+                time = variable_data{i}(t,1);
+                data = variable_data{i}(t,2);
+                if time > time_pt
+                    timept_data(i,1) = time;
+                    timept_data(i,2) = data;
+                    break
+                else
+                    continue
+                end
+            end
+        end
+    end
+end
+    
 
 function var_data = get_var_time_data(memory_matrix, time_indx, variable_indx)
+    % Gets all of the time data for a given variable.
     [num_sims, num_runs] = size(memory_matrix);
     var_data = cell(num_sims, num_runs);
     for i = 1:num_sims
@@ -251,6 +314,9 @@ end
 
 
 function history = run_simulation(initial_conditions, S_array, K_array, t_max)
+    % Runs gillespie algorithm given a set of initial conditions,
+    % stochiometry matrix, reaction rate coefficients, and maximum time to
+    % run the simulation.
     [num_reagents, num_rxn] = size(S_array);
     Z = zeros(num_rxn, 1);
     alpha = zeros(num_rxn, 1);
@@ -274,17 +340,21 @@ function history = run_simulation(initial_conditions, S_array, K_array, t_max)
         tau = exprnd(1/sum(alpha));
         if isnan(tau)
             tau = 0;
+            break
         end
         t = t + tau;
         x_advance = x0 + S_array*Z;
 %         history = [history;t,alpha',Z',rm',x_advance'];
         history = [history;t,x_advance'];
     end
-%     plot(history(:,1),history(77:94));
+    plot(history(:,1),history(:,2:8));
 end
 
 
 function alpha = update_alpha(Z_array, S_array, K_array, initial_conditions)
+    % Updates the propensity matrix and determines the reaction that will
+    % occur based on the number of elements per reactant and the
+    % probability of each reaction occuring.
     [num_reagents, num_rxn] = size(S_array);
 
     X_updated = S_array * Z_array + initial_conditions;
@@ -302,6 +372,8 @@ end
     
 
 function quotient = rxn_number(rm)
+    % Randomly determines the reaction that will occur by given the
+    % probability distribution of a reaction occuring.
     r1 = rand;
     sum_R = 0;
     quotient = 0;
@@ -317,6 +389,8 @@ end
 
 
 function clean_data = rm_extras(memory,start,stop)
+    % function removes redundant columns from dataset, takes in start and
+    % stop range for removing columns by index.
     [iter, run] = size(memory);
     clean_data = cell(iter,run);
     for i = 1:iter
@@ -329,7 +403,10 @@ function clean_data = rm_extras(memory,start,stop)
     return
 end
 
+
 function end_results = end_state(cleaned_data)
+    % Function grabs the last element in a simulation, takes the last
+    % possible occurence in the history of the simulation (last time point)
     [iter, run] = size(cleaned_data);
     end_results = cell(iter,run);
     for i = 1:iter
