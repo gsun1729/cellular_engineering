@@ -52,7 +52,7 @@ function done = hw3_template()
   gamma   = [3, 2, 1.1];
   map     = zeros(pts,pts);
   figure_num = 0;
-  # Cycle through variations in Beta.
+  % Cycle through variations in Beta.
   for indx = 1:length(beta)
     figure_num = figure_num + 1;
     for m=1:pts
@@ -96,7 +96,7 @@ function done = hw3_template()
   g   = 1;
   n   = [2.0015, 0.1, 1, 3];
   K   = 2.9618e-5;
-  # Cycle through variations in eta.
+  % Cycle through variations in eta.
   for i=1:length(n)
     theta   = [a1, a2, b, g, n(i), K, 0];
     IPTG    = logspace(-6, -2, 50);
