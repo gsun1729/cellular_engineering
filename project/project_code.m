@@ -75,12 +75,18 @@ k_array = [
     ];
 
 num_simulations = 300;
-t_max = 0.01;
+t_max = 0.2;
 %% Define initial conditions
+% L = 1000;
+% a0 = 500;
+% b0 = 600;
+% g0 = 400;
+
 L = 10000;
-a0 = 2000;
-b0 = 1000;
-g0 = 1000;
+a0 = 5000;
+b0 = 6000;
+g0 = 4000;
+
 % Set IC
 initial_cond = zeros(num_reagents, 1);
 initial_cond(1) = L;
@@ -101,14 +107,21 @@ for iter = 1:num_simulations
     iter
     hold on
     memory{iter} = run_simulation(initial_cond, SA, k_array, t_max);
+    title('Expression pattern in WT');
 end
 
 
-%% Define disease initial conditions
-L = 100;
-a0 = 2000;
-b0 = 1000;
-g0 = 1000;
+% Define disease initial conditions
+% L = 100;
+% a0 = 2000;
+% b0 = 1000;
+% g0 = 1000;
+
+L = 5000;
+a0 = 5000;
+b0 = 6000;
+g0 = 4000;
+
 % Set IC
 initial_cond = zeros(num_reagents, 1);
 initial_cond(1) = L;
@@ -129,40 +142,77 @@ for iter = 1:num_simulations
     iter
     hold on
     memory_disease{iter} = run_simulation(initial_cond, SA, k_array, t_max);
+    title('Expression pattern in SLE');
 end
 
 
 
 %% Plot block
-figure('units','normalized','outerposition',[0 0 1 1]);
-hold on;
-histogram(L_data_ES(:,2), 'Normalization','pdf');
-% histogram(L_i_data_ES(:,2), 'Normalization','pdf');
-title("Ligand [L] Count at 5s");
-xlabel('Units [count]');
-ylabel('Probability');
-% legend('External','Internal');
-saveas(gcf, "L_ES.png")
-
-
 
 
 %%
 t_space = linspace(0,t_max,200);
 
-% hist3(asdf,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
-
 [L_WT, L_KO] = paired_time_hist3(memory, memory_disease, 2, t_space);
+[a_WT, a_KO] = paired_time_hist3(memory, memory_disease, 3, t_space);
+[b_WT, b_KO] = paired_time_hist3(memory, memory_disease, 4, t_space);
+[g_WT, g_KO] = paired_time_hist3(memory, memory_disease, 5, t_space);
+[aL_WT, aL_KO] = paired_time_hist3(memory, memory_disease, 6, t_space);
+[bL_WT, bL_KO] = paired_time_hist3(memory, memory_disease, 7, t_space);
+[abL_WT, abL_KO] = paired_time_hist3(memory, memory_disease, 8, t_space);
+[bgL_WT, bgL_KO] = paired_time_hist3(memory, memory_disease, 9, t_space);
+[abgL_WT, abgL_KO] = paired_time_hist3(memory, memory_disease, 10, t_space);
 %%
-figure 
-subplot(1,2,1)
-hist3(L_WT,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
-subplot(1,2,2)
-hist3(L_KO,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
+
+plotter(L_WT, L_KO, [50,50], [45,75], 'Ligand distribution vs Time', "L_time.png");
+plotter(a_WT, a_KO, [50,50], [45,75], 'Alpha distribution vs Time', "a_time.png");
+plotter(b_WT, b_KO, [50,50], [45,75], 'Beta distribution vs Time', "b_time.png");
+plotter(g_WT, g_KO, [50,11], [45,75], 'Gamma distribution vs Time', "g_time.png");
+plotter(aL_WT, aL_KO, [50,50], [45,75], 'Alpha-Ligand distribution vs Time', "aL_time.png");
+plotter(bL_WT, bL_KO, [50,35], [45,75], 'Beta-Ligand distribution vs Time', "bL_time.png");
+plotter(abL_WT, abL_KO, [50,22], [45,75], 'Alpha-Beta-Ligand distribution vs Time', "abL_time.png");
+plotter(bgL_WT, bgL_KO, [50,9], [45,75], 'Beta-Gamma-Ligand distribution vs Time', "bgL_time.png");
+plotter(abgL_WT, abgL_KO, [50,7], [45,75], 'Alpha-Beta-Gamma-Ligand distribution vs Time', "abgL_time.png");
+
+
 %%
-hold on
-hist3(wam,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
-hist3(wam2,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
+
+save("MUT300_memory.mat", 'memory_disease', '-v7.3')
+save("WT300_memory.mat", 'memory', '-v7.3')
+%%
+function plotter(D1, D2, nbins, viewing_angle, title, filename)
+    figure('units','normalized','outerposition',[0 0 1 1])
+    subplot(2,2,1)
+    h1 = histogram2(D1(:,2), D1(:,1), nbins, 'FaceColor','flat', 'Normalization','probability', 'EdgeColor','none');
+    zlabel('Frequency');
+    xlabel('Time (s)');
+    ylabel('Substrate Count');
+    view(viewing_angle)
+    subplot(2,2,2)
+    h2 = histogram2(D2(:,2), D2(:,1), nbins, 'FaceColor','flat', 'Normalization','probability','EdgeColor','none');
+    zlabel('Frequency');
+    xlabel('Time (s)');
+    ylabel('Substrate Count');
+    view(viewing_angle)
+    subplot(2,2,3)
+    h1 = histogram2(D1(:,2), D1(:,1), nbins, 'FaceColor','flat', 'Normalization','probability','EdgeColor','none');
+    colorbar
+    zlabel('Frequency');
+    xlabel('Time (s)');
+    ylabel('Substrate Count');
+    view(2)
+    subplot(2,2,4)
+    h2 = histogram2(D2(:,2), D2(:,1), nbins, 'FaceColor','flat', 'Normalization','probability','EdgeColor','none');
+    colorbar
+    zlabel('Frequency');
+    xlabel('Time (s)');
+    ylabel('Substrate Count');
+    view(2)
+    suptitle(sprintf(title));
+    saveas(gcf,filename);
+end
+
+
 function dataset = gimme_the_histogram(memory, var_indx, t_space)
     % Gets histogram data for one dataset.
     times = [];
@@ -274,7 +324,19 @@ function history = run_simulation(initial_conditions, S_array, K_array, t_max)
 %         history = [history;t,alpha',Z',rm',x_advance'];
         history = [history;t,x_advance'];
     end
-    plot(history(:,1),history(:,2:8));
+    cmap = colormap(parula(9));
+    hold on;
+    plot(history(:,1),history(:,2),'Color',cmap(1,:));
+    plot(history(:,1),history(:,3),'Color',cmap(2,:));
+    plot(history(:,1),history(:,4),'Color',cmap(3,:));
+    plot(history(:,1),history(:,5),'Color',cmap(4,:));
+    plot(history(:,1),history(:,6),'Color',cmap(5,:));
+    plot(history(:,1),history(:,7),'Color',cmap(6,:));
+    plot(history(:,1),history(:,8),'Color',cmap(7,:));
+    plot(history(:,1),history(:,9),'Color',cmap(8,:));
+    plot(history(:,1),history(:,10),'Color',cmap(9,:));
+    xlim([0,t_max]);
+    legend('Ligand','a','b','g','aL','bL','abL','bgL','abgL');
 end
 
 
