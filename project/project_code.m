@@ -74,13 +74,13 @@ k_array = [
     k_int
     ];
 
-num_simulations = 20;
-
+num_simulations = 5000;
+t_max = 0.01;
 %% Define initial conditions
 L = 10000;
 a0 = 2000;
 b0 = 1000;
-g0 = 800;
+g0 = 1000;
 % Set IC
 initial_cond = zeros(num_reagents, 1);
 initial_cond(1) = L;
@@ -94,7 +94,7 @@ initial_cond(21) = initial_cond(4);
 
 
 memory = cell(num_simulations,1);
-t_max = 0.008;
+
 
 figure
 for iter = 1:num_simulations
@@ -107,8 +107,8 @@ end
 %% Define disease initial conditions
 L = 100;
 a0 = 2000;
-b0 = 500;
-g0 = 600;
+b0 = 1000;
+g0 = 1000;
 % Set IC
 initial_cond = zeros(num_reagents, 1);
 initial_cond(1) = L;
@@ -122,7 +122,7 @@ initial_cond(21) = initial_cond(4);
 
 
 memory_disease = cell(num_simulations,1);
-t_max = 0.1;
+
 
 figure
 for iter = 1:num_simulations
@@ -131,48 +131,6 @@ for iter = 1:num_simulations
     memory_disease{iter} = run_simulation(initial_cond, SA, k_array, t_max);
 end
 
-
-%%
-
-%% REally ugly plotting code 
-% Retrieve 
-L_data = get_var_time_data(memory,1,2);
-a_data = get_var_time_data(memory,1,3);
-b_data = get_var_time_data(memory,1,4);
-g_data = get_var_time_data(memory,1,5);
-aL_data = get_var_time_data(memory,1,6);
-bL_data = get_var_time_data(memory,1,7);
-abL_data = get_var_time_data(memory,1,8);
-bgL_data = get_var_time_data(memory,1,9);
-abgL_data = get_var_time_data(memory,1,10);
-L_i_data = get_var_time_data(memory,1,11);
-a_i_data = get_var_time_data(memory,1,12);
-b_i_data = get_var_time_data(memory,1,13);
-g_i_data = get_var_time_data(memory,1,14);
-aL_i_data = get_var_time_data(memory,1,15);
-bL_i_data = get_var_time_data(memory,1,16);
-abL_i_data = get_var_time_data(memory,1,17);
-bgL_i_data = get_var_time_data(memory,1,18);
-abgL_i_data = get_var_time_data(memory,1,19);
-
-L_data_ES = cell2mat(end_state(L_data));
-a_data_ES = cell2mat(end_state(a_data));
-b_data_ES = cell2mat(end_state(b_data));
-g_data_ES = cell2mat(end_state(g_data));
-aL_data_ES = cell2mat(end_state(aL_data));
-bL_data_ES = cell2mat(end_state(bL_data));
-abL_data_ES = cell2mat(end_state(abL_data));
-bgL_data_ES = cell2mat(end_state(bgL_data));
-abgL_data_ES = cell2mat(end_state(abgL_data));
-L_i_data_ES = cell2mat(end_state(L_i_data));
-a_i_data_ES = cell2mat(end_state(a_i_data));
-b_i_data_ES = cell2mat(end_state(b_i_data));
-g_i_data_ES = cell2mat(end_state(g_i_data));
-aL_i_data_ES = cell2mat(end_state(aL_i_data));
-bL_i_data_ES = cell2mat(end_state(bL_i_data));
-abL_i_data_ES = cell2mat(end_state(abL_i_data));
-bgL_i_data_ES = cell2mat(end_state(bgL_i_data));
-abgL_i_data_ES = cell2mat(end_state(abgL_i_data));
 
 
 %% Plot block
@@ -186,91 +144,50 @@ ylabel('Probability');
 % legend('External','Internal');
 saveas(gcf, "L_ES.png")
 
-figure('units','normalized','outerposition',[0 0 1 1]);
-hold on;
-histogram(a_data_ES(:,2), 'Normalization','pdf');
-% histogram(a_i_data_ES(:,2), 'Normalization','pdf');
-title("Alpha subunit [a] Count at 5s");
-xlabel('Units [count]');
-ylabel('Probability');
-% legend('External','Internal');
-saveas(gcf, "a_ES.png")
-
-
-figure('units','normalized','outerposition',[0 0 1 1]);
-hold on;
-histogram(b_data_ES(:,2), 'Normalization','pdf');
-% histogram(b_i_data_ES(:,2), 'Normalization','pdf');
-title("Beta subunit [b] Count at 5s");
-xlabel('Units [count]');
-ylabel('Probability');
-% legend('External','Internal');
-saveas(gcf, "b_ES.png")
-
-figure('units','normalized','outerposition',[0 0 1 1]);
-hold on;
-histogram(g_data_ES(:,2), 'Normalization','pdf');
-% histogram(g_i_data_ES(:,2), 'Normalization','pdf');
-title("Gamma subunit [g] Count at 5s");
-xlabel('Units [count]');
-ylabel('Probability');
-% legend('External','Internal');
-saveas(gcf, "g_ES.png")
-
-figure('units','normalized','outerposition',[0 0 1 1]);
-hold on;
-histogram(aL_data_ES(:,2), 'Normalization','pdf');
-% histogram(aL_i_data_ES(:,2), 'Normalization','pdf');
-title("Alpha-Ligand subunit [aL] Count at 5s");
-xlabel('Units [count]');
-ylabel('Probability');
-% legend('External','Internal');
-saveas(gcf, "aL_ES.png")
-
-figure('units','normalized','outerposition',[0 0 1 1]);
-hold on;
-histogram(bL_data_ES(:,2), 'Normalization','pdf');
-% histogram(bL_i_data_ES(:,2), 'Normalization','pdf');
-title("Beta-Ligand subunit [bL] Count at 5s");
-xlabel('Units [count]');
-ylabel('Probability');
-% legend('External','Internal');
-saveas(gcf, "bL_ES.png")
-
-figure('units','normalized','outerposition',[0 0 1 1]);
-hold on;
-histogram(abL_data_ES(:,2), 'Normalization','pdf');
-% histogram(abL_i_data_ES(:,2), 'Normalization','pdf');
-title("Alpha-Beta-Ligand subunit [abL] Count at 5s");
-xlabel('Units [count]');
-ylabel('Probability');
-% legend('External','Internal');
-saveas(gcf, "abL_ES.png")
-
-figure('units','normalized','outerposition',[0 0 1 1]);
-hold on;
-histogram(bgL_data_ES(:,2), 'Normalization','pdf');
-% histogram(bgL_i_data_ES(:,2), 'Normalization','pdf');
-title("Beta-Gamma-Ligand subunit [bgL] Count at 5s");
-xlabel('Units [count]');
-ylabel('Probability');
-% legend('External','Internal');
-saveas(gcf, "bgL_ES.png")
-
-figure('units','normalized','outerposition',[0 0 1 1]);
-hold on;
-histogram(abgL_data_ES(:,2), 'Normalization','pdf');
-% histogram(abgL_i_data_ES(:,2), 'Normalization','pdf');
-title("Alpha-Beta-Gamma-Ligand subunit [bgL] Count at 5s");
-xlabel('Units [count]');
-ylabel('Probability');
-% legend('External','Internal');
-saveas(gcf, "abgL_ES.png")
 
 
 
 %%
-get_timept_data(memory, 2, 0.008, 1)
+t_space = linspace(0,t_max,200);
+
+subplot(1,2,1)
+hist3(asdf,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
+
+function dataset = gimme_the_histogram(memory, var_indx, t_space)
+    % Gets histogram data for one dataset.
+    times = [];
+    datas = [];
+    for tp = 1:length(t_space)
+        time = t_space(tp);
+        temp = get_timept_data(memory, var_indx, time, 1);
+        times = [times; temp(:,1)];
+        datas = [datas; temp(:,2)];
+    end
+    dataset = [datas,times];
+end
+
+
+function [dataset1, dataset2] = paired_time_hist3(memory1, memory2, var_indx, t_space)
+    % helper function for creating paired disease state and normal state
+    % plots using hist3
+    t1 = [];
+    d1 = [];
+    t2 = [];
+    d2 = [];
+    for tp = 1:length(t_space)
+        time = t_space(tp);
+        data1 = get_timept_data(memory1, var_indx, time, 1);
+        data2 = get_timept_data(memory2, var_indx, time, 1);
+        t1 = [t1; data1(:,1)];
+        t2 = [t2; data2(:,1)];
+        
+        d1 = [d1; data1(:,2)];
+        d2 = [d2; data2(:,2)];
+    end
+    dataset1 = [t1,d1];
+    dataset2 = [t2,d2];
+end
+        
 
 function timept_data = get_timept_data(memory_matrix, variable_indx, time_pt, time_indx)
     % Given a history matrix and a variable ID number, gets the value for
