@@ -74,7 +74,7 @@ k_array = [
     k_int
     ];
 
-num_simulations = 5000;
+num_simulations = 300;
 t_max = 0.01;
 %% Define initial conditions
 L = 10000;
@@ -150,9 +150,19 @@ saveas(gcf, "L_ES.png")
 %%
 t_space = linspace(0,t_max,200);
 
-subplot(1,2,1)
-hist3(asdf,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
+% hist3(asdf,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
 
+[L_WT, L_KO] = paired_time_hist3(memory, memory_disease, 2, t_space);
+%%
+figure 
+subplot(1,2,1)
+hist3(L_WT,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
+subplot(1,2,2)
+hist3(L_KO,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
+%%
+hold on
+hist3(wam,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
+hist3(wam2,'CdataMode','auto','nbins',[200,20], 'EdgeColor','none','FaceColor','interp')
 function dataset = gimme_the_histogram(memory, var_indx, t_space)
     % Gets histogram data for one dataset.
     times = [];
@@ -184,8 +194,8 @@ function [dataset1, dataset2] = paired_time_hist3(memory1, memory2, var_indx, t_
         d1 = [d1; data1(:,2)];
         d2 = [d2; data2(:,2)];
     end
-    dataset1 = [t1,d1];
-    dataset2 = [t2,d2];
+    dataset1 = [d1,t1];
+    dataset2 = [d2,t2];
 end
         
 
