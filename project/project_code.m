@@ -76,7 +76,7 @@ k_array = [
 
 num_simulations = 300;
 t_max = 0.2;
-%% Define initial conditions
+%% Define WT initial conditions
 % L = 1000;
 % a0 = 500;
 % b0 = 600;
@@ -111,7 +111,7 @@ for iter = 1:num_simulations
 end
 
 
-% Define disease initial conditions
+%% Define disease initial conditions
 % L = 100;
 % a0 = 2000;
 % b0 = 1000;
@@ -155,54 +155,90 @@ t_space = linspace(0,t_max,200);
 
 [L_WT, L_KO] = paired_time_hist3(memory, memory_disease, 2, t_space);
 [a_WT, a_KO] = paired_time_hist3(memory, memory_disease, 3, t_space);
+%%
+fprintf('starting')
 [b_WT, b_KO] = paired_time_hist3(memory, memory_disease, 4, t_space);
+fprintf('b\n')
 [g_WT, g_KO] = paired_time_hist3(memory, memory_disease, 5, t_space);
+fprintf('g\n')
 [aL_WT, aL_KO] = paired_time_hist3(memory, memory_disease, 6, t_space);
+fprintf('al\n')
 [bL_WT, bL_KO] = paired_time_hist3(memory, memory_disease, 7, t_space);
+fprintf('bl\n')
 [abL_WT, abL_KO] = paired_time_hist3(memory, memory_disease, 8, t_space);
+fprintf('abl\n')
 [bgL_WT, bgL_KO] = paired_time_hist3(memory, memory_disease, 9, t_space);
+fprintf('bgl\n')
 [abgL_WT, abgL_KO] = paired_time_hist3(memory, memory_disease, 10, t_space);
+fprintf('abgl\n')
 %%
 
-plotter(L_WT, L_KO, [50,50], [45,75], 'Ligand distribution vs Time', "L_time.png");
-plotter(a_WT, a_KO, [50,50], [45,75], 'Alpha distribution vs Time', "a_time.png");
-plotter(b_WT, b_KO, [50,50], [45,75], 'Beta distribution vs Time', "b_time.png");
-plotter(g_WT, g_KO, [50,11], [45,75], 'Gamma distribution vs Time', "g_time.png");
-plotter(aL_WT, aL_KO, [50,50], [45,75], 'Alpha-Ligand distribution vs Time', "aL_time.png");
-plotter(bL_WT, bL_KO, [50,35], [45,75], 'Beta-Ligand distribution vs Time', "bL_time.png");
-plotter(abL_WT, abL_KO, [50,22], [45,75], 'Alpha-Beta-Ligand distribution vs Time', "abL_time.png");
-plotter(bgL_WT, bgL_KO, [50,9], [45,75], 'Beta-Gamma-Ligand distribution vs Time', "bgL_time.png");
-plotter(abgL_WT, abgL_KO, [50,7], [45,75], 'Alpha-Beta-Gamma-Ligand distribution vs Time', "abgL_time.png");
-
+plotter(L_WT, L_KO, [100,100], [45,75], 'Ligand distribution vs Time', "L_time.png");
+plotter(a_WT, a_KO, [100,100], [45,75], 'Alpha distribution vs Time', "a_time.png");
+%
+plotter(b_WT, b_KO, [100,100], [45,75], 'Beta distribution vs Time', "b_time.png");
+fprintf('b')
+plotter(g_WT, g_KO, [100,100], [45,75], 'Gamma distribution vs Time', "g_time.png");
+fprintf('g')
+plotter(aL_WT, aL_KO, [100,100], [45,75], 'Alpha-Ligand distribution vs Time', "aL_time.png");
+fprintf('aL')
+plotter(bL_WT, bL_KO, [100,100], [45,75], 'Beta-Ligand distribution vs Time', "bL_time.png");
+fprintf('bl')
+plotter(abL_WT, abL_KO, [100,150], [45,75], 'Alpha-Beta-Ligand distribution vs Time', "abL_time.png");
+fprintf('abl')
+plotter(bgL_WT, bgL_KO, [100,100], [45,75], 'Beta-Gamma-Ligand distribution vs Time', "bgL_time.png");
+fprintf('bgl')
+plotter(abgL_WT, abgL_KO, [100,100], [45,75], 'Alpha-Beta-Gamma-Ligand distribution vs Time', "abgL_time.png");
+fprintf('abgl')
 
 %%
+save("L_WT.mat",'L_WT','-v7.3');
+save("L_KO.mat",'L_KO','-v7.3');
+save("a_WT.mat",'a_WT','-v7.3');
+save("a_KO.mat",'a_KO','-v7.3');
+save("b_WT.mat",'b_WT','-v7.3');
+save("b_KO.mat",'b_KO','-v7.3');
+save("g_WT.mat",'g_WT','-v7.3');
+save("g_KO.mat",'g_KO','-v7.3');
+save("aL_WT.mat",'aL_WT','-v7.3');
+save("aL_KO.mat",'aL_KO','-v7.3');
+save("bL_WT.mat",'bL_WT','-v7.3');
+save("bL_KO.mat",'bL_KO','-v7.3');
+save("abL_WT.mat",'abL_WT','-v7.3');
+save("abL_KO.mat",'abL_KO','-v7.3');
+save("bgL_WT.mat",'bgL_WT','-v7.3');
+save("bgL_KO.mat",'bgL_KO','-v7.3');
+save("abgL_WT.mat",'abgL_WT','-v7.3');
+save("abgL_KO.mat",'abgL_KO','-v7.3');
 
-save("MUT300_memory.mat", 'memory_disease', '-v7.3')
-save("WT300_memory.mat", 'memory', '-v7.3')
+save("MUT300_100k_memory.mat", 'memory_disease', '-v7.3')
+save("WT300_50k_memory.mat", 'memory', '-v7.3')
+%%
+plotter(L_WT, L_KO, [100,200], [45,75], 'Alpha distribution vs Time', "a_time.png");
 %%
 function plotter(D1, D2, nbins, viewing_angle, title, filename)
     figure('units','normalized','outerposition',[0 0 1 1])
     subplot(2,2,1)
-    h1 = histogram2(D1(:,2), D1(:,1), nbins, 'FaceColor','flat', 'Normalization','probability', 'EdgeColor','none');
+    h1 = histogram2(D1(:,2), D1(:,1), nbins, 'FaceColor','flat', 'Normalization','count', 'EdgeColor','none');
     zlabel('Frequency');
     xlabel('Time (s)');
     ylabel('Substrate Count');
     view(viewing_angle)
     subplot(2,2,2)
-    h2 = histogram2(D2(:,2), D2(:,1), nbins, 'FaceColor','flat', 'Normalization','probability','EdgeColor','none');
+    h2 = histogram2(D2(:,2), D2(:,1), nbins, 'FaceColor','flat', 'Normalization','count','EdgeColor','none');
     zlabel('Frequency');
     xlabel('Time (s)');
     ylabel('Substrate Count');
     view(viewing_angle)
     subplot(2,2,3)
-    h1 = histogram2(D1(:,2), D1(:,1), nbins, 'FaceColor','flat', 'Normalization','probability','EdgeColor','none');
+    h1 = histogram2(D1(:,2), D1(:,1), nbins, 'FaceColor','flat', 'Normalization','count','EdgeColor','none');
     colorbar
     zlabel('Frequency');
     xlabel('Time (s)');
     ylabel('Substrate Count');
     view(2)
     subplot(2,2,4)
-    h2 = histogram2(D2(:,2), D2(:,1), nbins, 'FaceColor','flat', 'Normalization','probability','EdgeColor','none');
+    h2 = histogram2(D2(:,2), D2(:,1), nbins, 'FaceColor','flat', 'Normalization','count','EdgeColor','none');
     colorbar
     zlabel('Frequency');
     xlabel('Time (s)');
