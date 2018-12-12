@@ -74,43 +74,47 @@ k_array = [
     k_int
     ];
 
-num_simulations = 300;
-t_max = 0.2;
+num_simulations = 1;
+t_max = 0.1;
+%%
+hold on
 %% Define WT initial conditions
 % L = 1000;
 % a0 = 500;
 % b0 = 600;
 % g0 = 400;
+dat = [];
+for i = 1:1000:11000
+    L = i;
+    a0 = 5000;
+    b0 = 6000;
+    g0 = 4000;
 
-L = 10000;
-a0 = 5000;
-b0 = 6000;
-g0 = 4000;
+    % Set IC
+    initial_cond = zeros(num_reagents, 1);
+    initial_cond(1) = L;
+    initial_cond(2) = a0;
+    initial_cond(3) = b0;
+    initial_cond(4) = g0;
 
-% Set IC
-initial_cond = zeros(num_reagents, 1);
-initial_cond(1) = L;
-initial_cond(2) = a0;
-initial_cond(3) = b0;
-initial_cond(4) = g0;
-
-initial_cond(19) = initial_cond(2);
-initial_cond(20) = initial_cond(3);
-initial_cond(21) = initial_cond(4);
-
-
-memory = cell(num_simulations,1);
+    initial_cond(19) = initial_cond(2);
+    initial_cond(20) = initial_cond(3);
+    initial_cond(21) = initial_cond(4);
 
 
-figure
-for iter = 1:num_simulations
-    iter
-    hold on
-    memory{iter} = run_simulation(initial_cond, SA, k_array, t_max);
-    title('Expression pattern in WT');
+    memory = cell(num_simulations,1);
+
+
+    figure
+    for iter = 1:num_simulations
+        iter
+        hold on
+        memory{iter} = run_simulation(initial_cond, SA, k_array, t_max);
+        title(['Expression pattern L = ' num2str( i ) ]);
+    end
+    dat = [dat;end_state(memory)];
+
 end
-
-
 %% Define disease initial conditions
 % L = 100;
 % a0 = 2000;
